@@ -1,0 +1,21 @@
+<div style="border: 1px solid #ebebeb; margin: 16px; border-radius: 2px" @onclick="@Toggle">
+    Toggle (Expanded = @Expanded)
+
+    @if (Expanded)
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool Expanded { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent {get; set;}
+
+    void Toggle()
+    {
+        Expanded = !Expanded;
+    }
+}
