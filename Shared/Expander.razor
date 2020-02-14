@@ -1,13 +1,15 @@
 <div style="border: 1px solid #ebebeb; margin: 16px; border-radius: 2px" @onclick="@Toggle">
-    Toggle (Expanded = @Expanded)
+    Toggle (Expanded = @expanded)
 
-    @if (Expanded)
+    @if (expanded)
     {
         @ChildContent
     }
 </div>
 
 @code {
+    private bool expanded;
+
     [Parameter]
     public bool Expanded { get; set; }
 
@@ -16,6 +18,33 @@
 
     void Toggle()
     {
-        Expanded = !Expanded;
+        expanded = !expanded;
+    }
+
+    override protected void OnInitialized()
+    {
+        expanded = Expanded;
+    }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        if (DidParameterChange(parameters, nameof(Expanded), Expanded))
+        {
+            expanded = parameters.GetValueOrDefault<bool>(nameof(Expanded));
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected bool DidParameterChange<T>(ParameterView parameters, string parameterName, T parameterValue)
+    {
+        T value;
+
+        if (parameters.TryGetValue(parameterName, out value))
+        {
+            return !EqualityComparer<T>.Default.Equals(value, parameterValue);
+        }
+
+        return false;
     }
 }
